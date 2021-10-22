@@ -1,4 +1,4 @@
-module github.com/rjferguson21/resource-exclude
+module github.com/rjferguson21/resource-namespace-exclude
 
 go 1.17
 
