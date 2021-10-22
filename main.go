@@ -9,11 +9,19 @@ import (
 	"sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
+type Config struct {
+	ClusterResource []string `yaml:"clusterResources" json:"clusterResources"`
+}
+
 func main() {
-	var config struct {
-		Data map[string]string `yaml:"data"`
-	}
+	var config = new(Config)
+
 	fn := func(items []*yaml.RNode) ([]*yaml.RNode, error) {
+		clusterResourceSet := make(map[string]struct{}, len(config.ClusterResource))
+		for _, s := range config.ClusterResource {
+			clusterResourceSet[s] = struct{}{}
+		}
+
 		for i := range items {
 			meta, err := items[i].GetMeta()
 
@@ -21,8 +29,14 @@ func main() {
 				return nil, err
 			}
 
-			if meta.Kind == "ClusterIssuer" {
-				items[i].SetNamespace("")
+			_, ok := clusterResourceSet[meta.Kind]
+
+			if ok {
+				err = items[i].SetNamespace("")
+
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
 		return items, nil
