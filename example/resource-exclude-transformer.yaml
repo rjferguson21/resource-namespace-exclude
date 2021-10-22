@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ResourceExcludeTransformer
+metadata:
+  name: cluster-isssuer-exclude
+  annotations:
+    config.kubernetes.io/function: |
+      container: 
+        image: rjferguson21/resource-namespace-exclude:latest
+clusterResources: 
+  - ClusterIssuer
